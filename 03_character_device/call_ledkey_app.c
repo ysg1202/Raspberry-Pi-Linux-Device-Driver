@@ -8,9 +8,6 @@
 
 #define DEVICE_FILENAME "/dev/ledkey"
 
-#pragma GCC diagnostic ignored "-Wstringop-overflow"
-#pragma GCC diagnostic ignored "-Wstringop-overread"
-
 int main()
 {
 	int dev;
