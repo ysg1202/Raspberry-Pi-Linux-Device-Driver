@@ -6,14 +6,7 @@ GPIO 제어부터 `read()`, `write()`, `ioctl()`, GPIO Interrupt, Wait Queue, Bl
 
 ---
 
-## 📌 Development Environment
 
-* Raspberry Pi 4
-* Linux Kernel
-* C
-* Linux Kernel Module
-* GPIO LED / Push Button
-* Cross Compilation
 
 ---
 
