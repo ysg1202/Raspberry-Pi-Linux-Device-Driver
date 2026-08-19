@@ -30,7 +30,7 @@ static int gpioLedInit(void)
 			return ret;
 		}
 
-		ret=gpio_direction_output(gpioLed[i],0);   //출력으로 설정 및 gpio low 출력
+		ret=gpio_direction_output(gpioLed[i],0);   
 		if(ret < 0)
 		{
 			printk("Failed direction gpio%d error\n",gpioLed[i]);
@@ -107,8 +107,6 @@ static void gpioKeyFree(void)
 static int hello_init(void)
 {
 	int ret=0;
-//	unsigned long val = 0xff;
-
     ret=gpioLedInit();
     if(ret<0)
         return ret;
@@ -130,7 +128,6 @@ static int hello_init(void)
 
 static void hello_exit(void)
 {
-//	int ret=0;
 	unsigned long val = 0;
 
 	printk(KERN_INFO "Goodbye, world(val:%ld)\n",val);
@@ -140,8 +137,8 @@ static void hello_exit(void)
 	gpioKeyFree();
 }
 
-module_init(hello_init);    //insmod hello_init() 호출 
-module_exit(hello_exit);	//rmmod hello_exit() 호출
+module_init(hello_init);     
+module_exit(hello_exit);	
 
 MODULE_AUTHOR("KCCI-AIOT");
 MODULE_DESCRIPTION("test moudle");
