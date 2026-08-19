@@ -6,12 +6,11 @@
 #include <linux/types.h>
 #include <linux/fcntl.h>
 #include <linux/gpio.h>
+#include <linux/uaccess.h>
 
 #define LEDKEY_DEV_NAME  "ledkey_dev"
 #define LEDKEY_DEV_MAJOR 230
 #define GPIOCNT 8
-
-#define DEBUG
 
 static int gpioLed[GPIOCNT] = {518,519,520,521,522,523,524,525};
 static int gpioKey[GPIOCNT] = {528,529,530,531,532,533,534,535};
@@ -130,45 +129,29 @@ static loff_t ledkey_llseek(struct file *filp, loff_t off, int whence)
 }
 
 static ssize_t ledkey_read(struct file *filp,
-			   char *buf,
+			   char __user *buf,
 			   size_t count,
 			   loff_t *f_pos)
 {
 	char key = (char)gpioKeyGet();
-	int ret;
 
-	ret = copy_to_user(buf, &key, sizeof(key));
-
-	if(ret < 0)
-		return ret;
-
-#ifdef DEBUG
-	printk("call read -> key: %#04X, count : %d\n",
-	       (unsigned int)key, count);
-#endif
+	if(copy_to_user(buf, &key, sizeof(key)) != 0)
+		return -EFAULT;
 
 	return sizeof(key);
 }
 
 static ssize_t ledkey_write(struct file *filp,
-			    const char *buf,
+			    const char __user *buf,
 			    size_t count,
 			    loff_t *f_pos)
 {
 	char led;
-	int ret;
 
-	ret = copy_from_user(&led, buf, sizeof(led));
-
-	if(ret < 0)
-		return ret;
+	if(copy_from_user(&led, buf, sizeof(led)) != 0)
+		return -EFAULT;
 
 	gpioLedSet(led);
-
-#ifdef DEBUG
-	printk("call write -> led : %08X, count : %d\n",
-	       (unsigned int)led, count);
-#endif
 
 	return sizeof(led);
 }
