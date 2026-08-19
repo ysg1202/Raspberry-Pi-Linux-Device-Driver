@@ -4,12 +4,6 @@ Raspberry Pi에서 LED와 Push Button을 이용한 Linux Character Device Driver
 
 GPIO 제어부터 `read()`, `write()`, `ioctl()`, GPIO Interrupt, Wait Queue, Blocking / Non-blocking I/O, `poll()`, `/proc`까지 단계별 구성
 
----
-
-
-
----
-
 # 📚 Study Flow
 
 ```text
