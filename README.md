@@ -1,9 +1,8 @@
 # 🐧 Raspberry Pi Linux Device Driver
 
-Raspberry Pi에서 LED와 Push Button을 이용하여
-Linux Character Device Driver의 기본 구조부터 Interrupt 기반 Event 처리까지 단계적으로 구현한 실습 프로젝트입니다.
+Raspberry Pi에서 LED와 Push Button을 이용한 Linux Character Device Driver 실습
 
-단순 GPIO 제어에서 시작하여 `read()`, `write()`, `ioctl()`, GPIO Interrupt, Wait Queue, Blocking / Non-blocking I/O, `poll()`, `/proc`까지 Linux Device Driver의 주요 기능을 학습하고 구현했습니다.
+GPIO 제어부터 `read()`, `write()`, `ioctl()`, GPIO Interrupt, Wait Queue, Blocking / Non-blocking I/O, `poll()`, `/proc`까지 단계별 구성
 
 ---
 
@@ -52,29 +51,25 @@ poll()
 
 # 1. Linux Kernel Module
 
-Linux Kernel Module의 기본 구조를 학습했습니다.
+Kernel에 동적으로 추가하거나 제거할 수 있는 모듈 구조
 
 ```c
 module_init(driver_init);
 module_exit(driver_exit);
 ```
 
-주요 학습 내용:
+주요 명령어
 
-* Kernel Module 구조
-* `module_init()`
-* `module_exit()`
-* `insmod`
-* `rmmod`
-* `lsmod`
-* `dmesg`
-* Makefile을 이용한 Kernel Module Build
+* `insmod` : 모듈 적재
+* `rmmod` : 모듈 제거
+* `lsmod` : 로드된 모듈 확인
+* `dmesg` : 커널 로그 확인
 
 ---
 
 # 2. GPIO LED / KEY Control
 
-Raspberry Pi GPIO에 연결된 LED와 Push Button을 Kernel Driver에서 직접 제어했습니다.
+GPIO를 이용한 LED 출력 및 Push Button 입력 처리
 
 ```text
 Push Button
@@ -86,9 +81,9 @@ Linux Kernel Driver
 LED Control
 ```
 
-주요 내용:
+주요 내용
 
-* GPIO 요청 및 해제
+* GPIO 요청 / 해제
 * GPIO Input / Output 설정
 * LED 출력
 * KEY 입력
@@ -97,7 +92,7 @@ LED Control
 
 # 3. Character Device Driver
 
-User Space Application에서 `/dev` 파일을 통해 Kernel Driver에 접근할 수 있도록 Character Device Driver를 구현했습니다.
+User Space에서 `/dev` 파일을 통해 Kernel Driver에 접근하는 구조
 
 ```text
 User Application
@@ -113,8 +108,6 @@ Linux Device Driver
 GPIO LED / KEY
 ```
 
-주요 구조:
-
 ```c
 struct file_operations
 {
@@ -126,9 +119,8 @@ struct file_operations
 };
 ```
 
-학습 내용:
+주요 함수
 
-* `struct file_operations`
 * `open()`
 * `read()`
 * `write()`
@@ -140,7 +132,9 @@ struct file_operations
 
 # 4. User Space ↔ Kernel Space Data Transfer
 
-User Space와 Kernel Space는 직접 같은 메모리를 사용할 수 없기 때문에 Kernel API를 이용해 데이터를 전달했습니다.
+User Space와 Kernel Space 사이의 데이터 전달
+
+### User → Kernel
 
 ```text
 User Space
@@ -153,7 +147,7 @@ copy_from_user()
 Kernel Driver
 ```
 
-반대 방향:
+### Kernel → User
 
 ```text
 Kernel Driver
@@ -163,7 +157,7 @@ Kernel Driver
 User Space
 ```
 
-주요 함수:
+주요 API
 
 ```c
 copy_to_user();
@@ -174,25 +168,25 @@ copy_from_user();
 
 # 5. Major / Minor Number
 
-Character Device를 구분하기 위해 Major / Minor Number 구조를 학습했습니다.
+Character Device 구분에 사용하는 번호
 
 ```text
 Device File
    │
    ├── Major Number
-   │       └── 어떤 Driver인가
+   │       └── Driver 구분
    │
    └── Minor Number
-           └── Driver 내부의 어떤 Device인가
+           └── Driver 내부 Device 구분
 ```
 
-여러 LED/KEY Device를 하나의 Driver에서 구분하는 구조를 실습했습니다.
+하나의 Driver에서 여러 Device 구분 가능
 
 ---
 
 # 6. ioctl()
 
-`read()` / `write()`만으로 표현하기 어려운 Driver 제어 명령을 전달하기 위해 `ioctl()`을 구현했습니다.
+`read()` / `write()` 외의 별도 제어 명령 전달
 
 ```text
 User Application
@@ -208,18 +202,18 @@ unlocked_ioctl()
 LED / KEY Control
 ```
 
-주요 학습 내용:
+주요 내용
 
 * `unlocked_ioctl`
 * ioctl Command 정의
 * User / Kernel 공통 Header
-* Command와 Data 분리
+* Command / Data 분리
 
 ---
 
 # 7. GPIO Interrupt
 
-Push Button 상태를 반복해서 확인하는 방식 대신 GPIO Interrupt를 이용하여 Event 기반 구조를 구현했습니다.
+Push Button 상태 변화를 GPIO Interrupt로 처리
 
 ```text
 KEY Input
@@ -235,7 +229,7 @@ ISR
 Event Processing
 ```
 
-주요 Kernel API:
+주요 API
 
 ```c
 gpio_to_irq();
@@ -243,13 +237,13 @@ request_irq();
 free_irq();
 ```
 
-상승 / 하강 Edge Interrupt를 이용하여 KEY 입력 상태 변화를 처리했습니다.
+Rising / Falling Edge 기반 Interrupt 처리
 
 ---
 
 # 8. Dynamic Memory Allocation
 
-Driver 내부 데이터를 동적으로 관리하기 위해 `kmalloc()`을 사용했습니다.
+Driver 내부 데이터의 동적 메모리 할당
 
 ```text
 open()
@@ -267,7 +261,7 @@ release()
 kfree()
 ```
 
-주요 내용:
+주요 API
 
 ```c
 kmalloc();
@@ -278,7 +272,7 @@ kfree();
 
 # 9. filp->private_data
 
-`open()`에서 생성한 Driver별 데이터를 `read()`, `write()`, `release()` 등의 함수에서도 사용할 수 있도록 `filp->private_data`를 활용했습니다.
+열린 파일별 Driver 데이터 저장 공간
 
 ```text
 open()
@@ -289,21 +283,21 @@ kmalloc()
    ▼
 pkeyData
    │
-   ├─────────────┐
-   ▼             ▼
+   ├──────────────┐
+   ▼              ▼
 filp->private_data   request_irq()
-   │                 │
-   ▼                 ▼
-read() / write()     ISR
+   │                  │
+   ▼                  ▼
+read() / write()      ISR
 ```
 
-이를 통해 파일을 연 Process별 Driver Context를 관리하는 방법을 학습했습니다.
+`open()`에서 저장한 데이터를 `read()`, `write()`, `release()`에서 재사용
 
 ---
 
 # 10. Wait Queue
 
-Interrupt가 발생하기 전까지 User Process를 Sleep 상태로 두기 위해 Wait Queue를 적용했습니다.
+Event 발생 전까지 Process를 Sleep 상태로 대기시키는 구조
 
 ```text
 Application
@@ -326,7 +320,7 @@ wake_up_interruptible()
 read() Resume
 ```
 
-주요 API:
+주요 API
 
 ```c
 DECLARE_WAIT_QUEUE_HEAD();
@@ -338,11 +332,11 @@ wake_up_interruptible();
 
 # 11. Blocking / Non-blocking I/O
 
-Application의 `open()` Flag에 따라 Driver의 동작을 다르게 구현했습니다.
+`open()` Flag에 따른 `read()` 동작 구분
 
 ## Blocking I/O
 
-데이터가 없으면 Process가 Wait Queue에서 대기합니다.
+데이터가 없으면 Event 발생까지 대기
 
 ```text
 read()
@@ -360,20 +354,18 @@ Data Return
 
 ## Non-blocking I/O
 
-데이터가 없으면 즉시 반환합니다.
+데이터가 없으면 즉시 반환
 
 ```c
 if (filp->f_flags & O_NONBLOCK)
     return -EAGAIN;
 ```
 
-이를 통해 Blocking과 Non-blocking I/O의 차이를 학습했습니다.
-
 ---
 
 # 12. poll()
 
-여러 File Descriptor의 Event를 효율적으로 기다릴 수 있도록 Driver에 `poll()` Interface를 추가했습니다.
+File Descriptor의 Event 발생 여부 확인
 
 ```text
 User Application
@@ -399,7 +391,7 @@ POLLIN
 Application read()
 ```
 
-Driver:
+Driver
 
 ```c
 poll_wait(filp, &wait_queue, wait);
@@ -408,19 +400,19 @@ if (event)
     mask |= POLLIN | POLLRDNORM;
 ```
 
-Application:
+Application
 
 ```c
 poll(&pfd, 1, -1);
 ```
 
-`poll()`은 GPIO 값을 반복해서 검사하는 Busy Polling과 다르게 Event가 발생할 때까지 Process를 Sleep 상태로 둘 수 있습니다.
+Busy Polling과 달리 Event 발생 전까지 Process 대기
 
 ---
 
 # 13. /proc Interface
 
-Kernel 내부의 상태를 User Space에서 확인하기 위해 `/proc` Virtual File System을 활용했습니다.
+Kernel 내부 상태를 User Space에서 파일 형태로 확인하는 Virtual File System
 
 ```text
 User Space
@@ -436,19 +428,20 @@ Linux Kernel
 Driver Status
 ```
 
-`/proc`의 파일은 실제 Storage에 존재하는 일반 파일이 아니라 Kernel이 요청 시 데이터를 생성하는 Virtual File입니다.
+실제 Storage에 저장되지 않는 가상 파일
 
-학습 내용:
+예시
 
-* procfs
-* Kernel State 확인
-* User Space에서 Driver 정보 조회
+```bash
+cat /proc/cpuinfo
+cat /proc/meminfo
+cat /proc/interrupts
+cat /proc/modules
+```
 
 ---
 
 # 🔄 Final Event Flow
-
-최종적으로 LED/KEY Driver를 다음과 같은 Event 기반 구조로 구현했습니다.
 
 ```text
 Push Button
