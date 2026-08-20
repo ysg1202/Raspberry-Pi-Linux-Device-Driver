@@ -460,28 +460,3 @@ LED Control
 ```
 
 ---
-
-# 📁 Repository Structure
-
-```text
-raspberrypi-linux-device-driver/
-│
-├── README.md
-│
-├── 01_kernel_module/
-├── 02_gpio_ledkey/
-├── 03_character_device/
-├── 04_major_minor/
-├── 05_ioctl/
-├── 06_interrupt/
-├── 07_kmalloc_private_data/
-├── 08_blocking_io/
-├── 09_poll/
-└── 10_proc/
-```
-
----
-
-# 🔑 Keywords
-
-`Linux Kernel` `Device Driver` `Raspberry Pi` `Character Device` `GPIO` `Interrupt` `Wait Queue` `Blocking I/O` `Non-blocking I/O` `poll()` `ioctl()` `kmalloc()` `private_data` `procfs`
